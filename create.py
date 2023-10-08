@@ -15,7 +15,7 @@ last_names_file = "files/last-names.txt"
 generated_email_file = "files/generated_email.txt"
 
 # Function to generate a random human-like username without special characters
-def generate_random_username():
+def generate_random_username(domain):
     first_name = random.choice(first_names)
     last_name = random.choice(last_names)
     
@@ -26,8 +26,8 @@ def generate_random_username():
     # Generate a random number
     random_number = random.randint(1, 9999)
     
-    # Combine the first name, last name, and random number in the "username@domain.com" format
-    username = '{}{}@domain.com'.format(first_name.lower(), last_name.lower())
+    # Combine the first name, last name, and random number with the specified domain
+    username = '{}{}@{}'.format(first_name.lower(), last_name.lower(), domain)
     
     return username
 
@@ -36,8 +36,9 @@ def download_with_curl(url, local_filename):
     subprocess.call(["curl", "-o", local_filename, url])
 
 # Parse command-line arguments
-parser = argparse.ArgumentParser(description="Generate unique usernames")
+parser = argparse.ArgumentParser(description="Generate unique usernames with a specified domain")
 parser.add_argument("num_usernames", type=int, help="Number of unique usernames to generate")
+parser.add_argument("domain", help="Domain name for the email addresses")
 args = parser.parse_args()
 
 # Download the first names file if it doesn't exist
@@ -68,7 +69,7 @@ else:
 
 # Generate and print the specified number of unique usernames
 while len(unique_usernames) < args.num_usernames:
-    username = generate_random_username()
+    username = generate_random_username(args.domain)
     if username not in unique_usernames and username not in existing_usernames:
         unique_usernames.add(username)
         existing_usernames.add(username)  # Add to the set of existing usernames
